@@ -28,11 +28,11 @@ export default {
           children: [ 
             {
               id: 'aa',
-              label: 'aa',
+              label: 'a1',
             }, 
             {
               id: 'ab',
-              label: 'ab',
+              label: 'a2',
             }
           ],
         },
