@@ -16,50 +16,45 @@ export default {
   components: {
     Treeselect,
   },
-  data() {
-    return {
-      // define the default value
-      value: null,
-      // define options
-      options: [ 
-        {
-          id: 'a',
-          label: 'a',
-          children: [ 
-            {
-              id: 'aa',
-              label: 'a1',
-            }, 
-            {
-              id: 'ab',
-              label: 'a2',
-            }
-          ],
-        },
-        {
-          id: 'b',
-          label: 'b',
-        }, 
-        {
-          id: 'c',
-          label: 'c',
-        },
-        {
-          id: 'd',
-          label: 'd',
-          children: [ 
-            {
-              id: 'd1',
-              label: 'd1',
-            }, 
-            {
-              id: 'd2',
-              label: 'd2',
-            }
-          ],
-        },
-      ],
-    }
-  },
+  data: () => ({
+    value: [],
+    options: [ {
+      id: 'fruits',
+      label: 'Fruits',
+      children: [ {
+        id: 'apple',
+        label: 'Apple 🍎',
+        isNew: true,
+      }, {
+        id: 'grapes',
+        label: 'Grapes 🍇',
+      }, {
+        id: 'pear',
+        label: 'Pear 🍐',
+      }, {
+        id: 'strawberry',
+        label: 'Strawberry 🍓',
+      }, {
+        id: 'watermelon',
+        label: 'Watermelon 🍉',
+      } ],
+    }, {
+      id: 'vegetables',
+      label: 'Vegetables',
+      children: [ {
+        id: 'corn',
+        label: 'Corn 🌽',
+      }, {
+        id: 'carrot',
+        label: 'Carrot 🥕',
+      }, {
+        id: 'eggplant',
+        label: 'Eggplant 🍆',
+      }, {
+        id: 'tomato',
+        label: 'Tomato 🍅',
+      } ],
+    } ],
+  }),
 }
 </script>
