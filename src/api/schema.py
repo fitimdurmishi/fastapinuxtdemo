@@ -1,9 +1,18 @@
 # build a schema using pydantic
 from pydantic import BaseModel
 
+
+class Item(BaseModel):
+    id: int
+    name:str
+    description:str
+
+    class Config:
+        orm_mode = True
+
 class Book(BaseModel):
-    title: str
-    rating: int
+    name: str
+    page_numbers: int
     author_id: int
 
     class Config:

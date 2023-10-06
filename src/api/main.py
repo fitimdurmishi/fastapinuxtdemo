@@ -4,100 +4,156 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 from typing import Optional
 
-import databases
-import sqlalchemy
+from databases import Database
+from fastapi.responses import JSONResponse
+
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-import uvicorn
-# from fastapi_sqlalchemy import DBSessionMiddleware, db
+import databases
 
 from schema import Book as SchemaBook
 from schema import Author as SchemaAuthor
 from schema import User as SchemaUser
 from schema import Auth as SchemaAuth
+from schema import Item as SchemaItem
 
 from schema import Book
 from schema import Author
 from schema import User
 from schema import Auth
+from schema import Item
 
 from models import Book as ModelBook
 from models import Author as ModelAuthor
+from models import Item as Item
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv('.env')
 
-
-app = FastAPI()
-
-# DB related
-# DATABASE_URL = "postgresql://username:password@localhost/db_name"
-# DATABASE_URL = "postgresql://postgres:SellcaMocme2020@localhost/datacose"
-DATABASE_URL = "postgresql://fito:fito@localhost/datacose"
+DATABASE_URL = os.getenv("DATABASE_URL") # get it from .env
 database = databases.Database(DATABASE_URL)
-metadata = sqlalchemy.MetaData()
-engine = create_engine(DATABASE_URL)
 
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-class Item(Base):
-    __tablename__ = 'items'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    description = Column(String)
 
-# Base = declarative_base()
+app = FastAPI()
 
-# @app.on_event("startup")
-# async def startup():
-#     async with database.transaction():
-#         Base.metadata.create_all(bind=engine)
+# This will be used to get the token from the request
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# @app.on_event("shutdown")
-# async def shutdown():
-#     await database.disconnect()
+@app.on_event("startup")
+async def startup():
+    await database.connect()
 
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
+
+@app.get("/test_connection")
+async def test_connection():
+    try:
+        # Execute a simple query to check the connection
+        # query = "SELECT 1"
+        query = "SELECT COUNT(*) FROM items"
+        result = await database.fetch_val(query)
+        if result > 0:
+            return {"message": "Connection to PostgreSQL successful"}
+        else:
+            return {"message": "Failed to establish connection to PostgreSQL"}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"message": "Connection error", "error": str(e)})
+
+
+
+# Items related
+
+# Get an items
+@app.get("/items/")
+# def read_items(token: str = Depends(oauth2_scheme)):
+def read_items():
+    db = SessionLocal()
+    items = db.query(Item).all()
+    db.close()
+    if items is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return items
+
+
+# Create a new item
+# @app.post("/items", response_model=Item)
+# def create_item(item: Item):
+#     db = SessionLocal()
+#     db.add(item)
+#     db.commit()
+#     db.refresh(item)
+#     db.close()
+#     return item
 
 # @app.post("/items/")
-# async def create_item(item: Item):
-#     query = Item.__table__.insert().values(
+# def create_item(item: Item):
+#     db = SessionLocal()
+#     db.query = Item.__table__.insert().values(
 #         name=item.name,
 #         description=item.description
 #     )
-#     return await database.execute(query)
+#     # return database.execute(db.query)
+#     database.execute(db.query)
+#     return item
 
+# Get an item by ID
+@app.get("/items/{item_id}")
+def read_item(item_id: int):
+    db = SessionLocal()
+    item = db.query(Item).filter(Item.id == item_id).first()
+    db.close()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return item
 
-# @app.on_event("startup")
-# async def startup() -> None:
-#     database_ = app.state.database
-#     if not database_.is_connected:
-#         await database_.connect()
+# Update an item
+@app.put("/items/{item_id}")
+def update_item(item_id: int, name: str, description: str):
+    db = SessionLocal()
+    item = db.query(Item).filter(Item.id == item_id).first()
+    if item is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Item not found")
 
-# @app.on_event("shutdown")
-# async def shutdown() -> None:
-#     database_ = app.state.database
-#     if database_.is_connected:
-#         await database_.disconnect()
+    item.name = name
+    item.description = description
+    db.commit()
+    db.refresh(item)
+    db.close()
+    return item
 
+# Delete an item
+@app.delete("/items/{item_id}")
+def delete_item(item_id: int):
+    db = SessionLocal()
+    item = db.query(Item).filter(Item.id == item_id).first()
+    if item is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Item not found")
 
-@app.get("/items/{item_id}/")
-async def read_item(item_id: int):
-    query = Item.__table__.select().where(Item.id == item_id)
-    return await database.fetch_one(query)
-
+    db.delete(item)
+    db.commit()
+    db.close()
+    return {"message": "Item deleted"}
 
 
 
 
 
 # This will be used to get the token from the request
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # class User(BaseModel):
 #     username: str

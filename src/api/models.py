@@ -5,6 +5,14 @@ from sqlalchemy.sql import func
 
 Base  = declarative_base()
 
+
+class Item(Base):
+    __tablename__ = 'items'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(String)  
+
+
 class Book(Base):
     __tablename__ = 'book'
     id  = Column(Integer, primary_key=True, index=True)
@@ -43,3 +51,4 @@ class Auth(Base):
     expires = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship('User')
+  

@@ -9,7 +9,13 @@ from sqlalchemy.orm import sessionmaker
 
 import databases
 
-DATABASE_URL = "postgresql://fito:fito@localhost/datacose"
+import os
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+
+# DATABASE_URL = "postgresql://fito:fito@localhost/datacose"
+DATABASE_URL = os.getenv("DATABASE_URL") # get it from .env
 database = databases.Database(DATABASE_URL)
 
 Base = declarative_base()
@@ -72,6 +78,16 @@ def read_items():
 #     db.commit()
 #     db.refresh(item)
 #     db.close()
+#     return item
+# @app.post("/items/")
+# def create_item(item: Item):
+#     db = SessionLocal()
+#     db.query = Item.__table__.insert().values(
+#         name=item.name,
+#         description=item.description
+#     )
+#     # return database.execute(db.query)
+#     database.execute(db.query)
 #     return item
 
 # Get an item by ID
