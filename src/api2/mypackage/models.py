@@ -17,7 +17,7 @@ class Author(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    
+
     books = relationship('Book', back_populates='author')
 
 
@@ -34,5 +34,5 @@ class Book(Base):
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String)
+    username = Column(String, unique=True)
     password = Column(String)
