@@ -4,7 +4,22 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 from typing import Optional
 
+import databases
+import sqlalchemy
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+
 app = FastAPI()
+
+# DB related
+# DATABASE_URL = "postgresql://username:password@localhost/db_name"
+DATABASE_URL = "postgresql://postgres:SellcaMocme2020@localhost/datacose"
+database = databases.Database(DATABASE_URL)
+metadata = sqlalchemy.MetaData()
+engine = create_engine(DATABASE_URL)
+
 
 # This will be used to get the token from the request
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
