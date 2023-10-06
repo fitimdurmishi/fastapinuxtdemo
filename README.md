@@ -10,6 +10,9 @@ uvicorn main:app --reload --port 8001
 
 python -m uvicorn main3:app --reload
 
+uvicorn api2.main:app --reload
+python -m uvicorn main:app --reload
+
 curl -X POST "http://127.0.0.1:8000/token" -H "accept: application/json" -H "Content-Type: application/x-www-form-urlencoded" -d "username=testuser&password=password"
 curl -X GET "http://127.0.0.1:8000/secure-data" -H "accept: application/json" -H "Authorization: Bearer <YOUR_TOKEN>"
 
@@ -18,6 +21,8 @@ pip install databases databases[postgresql]
 pip install alembic psycopg2 python-dotenv
 
 https://www.educative.io/answers/how-to-use-postgresql-database-in-fastapi
+
+https://fastapi.tiangolo.com/tutorial/sql-databases/#create-your-fastapi-path-operations
 
 
 
