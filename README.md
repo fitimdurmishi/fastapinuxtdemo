@@ -20,8 +20,8 @@ curl -X GET "http://127.0.0.1:8000/secure-data" -H "accept: application/json" -H
 pip install databases databases[postgresql]
 pip install alembic psycopg2 python-dotenv
 
+resources
 https://www.educative.io/answers/how-to-use-postgresql-database-in-fastapi
-
 https://fastapi.tiangolo.com/tutorial/sql-databases/#create-your-fastapi-path-operations
 
 
