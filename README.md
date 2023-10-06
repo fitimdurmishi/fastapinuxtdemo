@@ -2,7 +2,7 @@
 
 # api
 
-startin api app
+starting api app
 
 python -m uvicorn main:app --reload
 uvicorn main:app --reload
@@ -24,6 +24,8 @@ resources
 https://www.educative.io/answers/how-to-use-postgresql-database-in-fastapi
 https://fastapi.tiangolo.com/tutorial/sql-databases/#create-your-fastapi-path-operations
 
+
+curl -X PUT -H "Content-Type: application/json" -d '{"name": "Updated Item Name", "description": "Updated Item Description"}' http://127.0.0.1:8001/items/3
 
 
 

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
 from . import models
 from . import schemas
@@ -17,9 +18,26 @@ def create_item(db: Session, item: schemas.Item):
     db.refresh(db_item)
     return db_item
 
-# def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
-#     db_item = models.Item(**item.dict(), owner_id=user_id)
-#     db.add(db_item)
-#     db.commit()
-#     db.refresh(db_item)
-#     return db_item
+def update_item(db: Session, id: int, name: str, description: str):
+    item = db.query(models.Item).filter(models.Item.id == id).first()
+    if item is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    item.name = name
+    item.description = description
+    db.commit()
+    db.refresh(item)
+    db.close()
+    return item
+
+def delete_item(db: Session, item_id: int):
+    item = db.query(models.Item).filter(models.Item.id == item_id).first()
+    if item is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    db.delete(item)
+    db.commit()
+    db.close()
+    return item
