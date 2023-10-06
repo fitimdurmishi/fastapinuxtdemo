@@ -1,6 +1,7 @@
 # datacosechallenge
 
 # api
+python -m uvicorn main:app --reload
 uvicorn main:app --reload
 uvicorn main:app --reload --port 8001
 
@@ -10,13 +11,14 @@ curl -X GET "http://127.0.0.1:8000/secure-data" -H "accept: application/json" -H
 
 
 # dashboard
-  To get started:
 
+	npm install
+
+  To get started:
 	cd dashboard
 	npm run dev
 
   To build & start for production:
-
 	cd dashboard
 	npm run build
 	npm run start
