@@ -11,6 +11,44 @@ def get_user_by_username_password(db: Session, username: str, password: str):
 
 
 
+# Author table CRUDs
+def get_authors(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Author).offset(skip).limit(limit).all()
+
+def get_author(db: Session, id: int):
+    return db.query(models.Author).filter(models.Author.id == id).first()
+
+def create_author(db: Session, author: schemas.Author):
+    db_author = models.Author(name=author.name)
+    db.add(db_author)
+    db.commit()
+    db.refresh(db_author)
+    return db_author
+
+def update_author(db: Session, id: int, name: str):
+    author = db.query(models.Author).filter(models.Author.id == id).first()
+    if author is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Author not found")
+    author.name = name
+    db.commit()
+    db.refresh(author)
+    db.close()
+    return author
+
+def delete_author(db: Session, author_id: int):
+    author = db.query(models.Author).filter(models.Author.id == author_id).first()
+    if author is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Author not found")
+
+    db.delete(author)
+    db.commit()
+    db.close()
+    return author
+
+
+
 # Items table
 def get_items(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Item).offset(skip).limit(limit).all()

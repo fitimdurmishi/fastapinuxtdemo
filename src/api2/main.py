@@ -68,6 +68,42 @@ def get_secure_data(token: str = Depends(oauth2_scheme)):
 
 
 
+
+# ****** Author API endpoints
+
+@app.get("/authors/", response_model=list[schemas.Author])
+def read_authors(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    authors = crud.get_authors(db, skip=skip, limit=limit)
+    return authors
+
+@app.get("/authors/{author_id}", response_model=schemas.Author)
+def read_author(author_id: int, db: Session = Depends(get_db)):
+    db_author = crud.get_author(db, id=author_id)
+    if db_author is None:
+        raise HTTPException(status_code=404, detail="Author not found")
+    return db_author
+
+@app.post("/authors/", response_model=schemas.Author)
+def create_author(author: schemas.Author, db: Session = Depends(get_db)):
+    db_author = crud.get_author(db, id=author.id)
+    if db_author:
+        raise HTTPException(status_code=400, detail="Author with this id already registered")
+    return crud.create_author(db=db, author=author)
+
+@app.put("/authors/{author_id}")
+def update_author(author_id: int, author: schemas.Author, db: Session = Depends(get_db)):
+    try:
+        updated_author = crud.update_author(db, author_id, author.name)
+        return {"message": "Author updated successfully", "author": updated_author}
+    except HTTPException as e:
+        return e
+    
+@app.delete("/authors/{author_id}")
+def delete_author(author_id: int, db: Session = Depends(get_db)):
+    deleted_author = crud.delete_author(db, author_id)
+    return {"message": "Author deleted successfully", "author": deleted_author}
+
+
 # ****** Items API endpoints
 
 @app.get("/items/", response_model=list[schemas.Item])
