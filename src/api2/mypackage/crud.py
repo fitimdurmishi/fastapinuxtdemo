@@ -10,7 +10,6 @@ def get_user_by_username_password(db: Session, username: str, password: str):
     return db.query(models.User).filter(models.User.username == username and models.User.password == password).first()
 
 
-
 # Author table CRUDs
 def get_authors(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Author).offset(skip).limit(limit).all()
@@ -41,11 +40,48 @@ def delete_author(db: Session, author_id: int):
     if author is None:
         db.close()
         raise HTTPException(status_code=404, detail="Author not found")
-
     db.delete(author)
     db.commit()
     db.close()
     return author
+
+
+# Books table CRUDs
+def get_books(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Book).offset(skip).limit(limit).all()
+
+def get_book(db: Session, id: int):
+    return db.query(models.Book).filter(models.Book.id == id).first()
+
+def create_book(db: Session, book: schemas.Book):
+    db_book = models.Book(name=book.name, page_numbers=book.page_numbers, author_id=book.author_id)
+    db.add(db_book)
+    db.commit()
+    db.refresh(db_book)
+    return db_book
+
+def update_book(db: Session, id: int, name: str, page_numbers: int, author_id: int):
+    book = db.query(models.Book).filter(models.Book.id == id).first()
+    if book is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Book not found")
+    book.name = name
+    book.page_numbers = page_numbers
+    book.author_id = author_id
+    db.commit()
+    db.refresh(book)
+    db.close()
+    return book
+
+def delete_book(db: Session, book_id: int):
+    book = db.query(models.Book).filter(models.Book.id == book_id).first()
+    if book is None:
+        db.close()
+        raise HTTPException(status_code=404, detail="Book not found")
+    db.delete(book)
+    db.commit()
+    db.close()
+    return book
 
 
 

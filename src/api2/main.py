@@ -3,9 +3,6 @@ from sqlalchemy.orm import Session
 
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-# from pydantic import BaseModel
-# from typing import Optional
-
 
 from mypackage import crud, models, schemas
 from mypackage.database import SessionLocal, engine
@@ -14,7 +11,6 @@ models.Base.metadata.create_all(bind=engine)
 
 # This will be used to get the token from the request
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 
 import os
 from dotenv import load_dotenv
@@ -37,7 +33,6 @@ def get_db():
 
 
 # ****** Auth endpoints and functions
-
 def create_jwt_token(data: dict):
     to_encode = data.copy()
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -69,8 +64,7 @@ def get_secure_data(token: str = Depends(oauth2_scheme)):
 
 
 
-# ****** Author API endpoints
-
+# ****** Authors API endpoints
 @app.get("/authors/", response_model=list[schemas.Author])
 def read_authors(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     authors = crud.get_authors(db, skip=skip, limit=limit)
@@ -104,8 +98,43 @@ def delete_author(author_id: int, db: Session = Depends(get_db)):
     return {"message": "Author deleted successfully", "author": deleted_author}
 
 
-# ****** Items API endpoints
+# ****** Books API endpoints
+@app.get("/books/", response_model=list[schemas.Book])
+def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    books = crud.get_books(db, skip=skip, limit=limit)
+    return books
 
+@app.get("/books/{book_id}", response_model=schemas.Book)
+def read_author(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, id=book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return db_book
+
+
+@app.post("/books/", response_model=schemas.Book)
+def create_book(book: schemas.Book, db: Session = Depends(get_db)):
+    db_book = crud.get_book(db, id=book.id)
+    if db_book:
+        raise HTTPException(status_code=400, detail="Book with this id already registered")
+    return crud.create_book(db=db, book=book)
+
+@app.put("/books/{book_id}")
+def update_book(book_id: int, book: schemas.Book, db: Session = Depends(get_db)):
+    try:
+        updated_book = crud.update_book(db, book_id, book.name, book.page_numbers, book.author_id)
+        return {"message": "Book updated successfully", "book": updated_book}
+    except HTTPException as e:
+        return e
+    
+@app.delete("/books/{book_id}")
+def delete_book(book_id: int, db: Session = Depends(get_db)):
+    deleted_book = crud.delete_book(db, book_id)
+    return {"message": "Book deleted successfully", "book": deleted_book}
+
+
+
+# ****** Items API endpoints
 @app.get("/items/", response_model=list[schemas.Item])
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
