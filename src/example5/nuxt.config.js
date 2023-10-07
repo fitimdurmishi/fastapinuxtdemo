@@ -1,10 +1,7 @@
 export default {
-  // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
-
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'example3',
+    title: 'example5',
     htmlAttrs: {
       lang: 'en'
     },
@@ -36,9 +33,17 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/bootstrap
-    'bootstrap-vue/nuxt',
+    '@nuxtjs/axios',
   ],
+
+  axios: {
+    // extra config e.g
+    baseURL: process.env.API_URL,
+  },
+
+  proxy: {
+    '/api/': 'http://127.0.0.1:8000'  // we do this beacuse of CORS
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
