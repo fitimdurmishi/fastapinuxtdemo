@@ -1,20 +1,42 @@
 <template>
-  <div>
-    <nav>
-      <ul>
-        <li>
-          <NuxtLink to="/">Home</NuxtLink>
-        </li>
-        <li>
-          <NuxtLink to="/authors">Authors</NuxtLink>
-        </li>
-        <li>
-          <NuxtLink to="/books">Books</NuxtLink>
-        </li>
-      </ul>
-    </nav>
-  </div>
+    <div>
+        <nav>
+            <ul>
+              <li>
+                <NuxtLink to="/">Home</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/authors">Authors</NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/books">Books</NuxtLink>
+              </li>
+            </ul>
+        </nav>
+
+        <ul v-for="a in authors" v-bind:key="a.id">
+            <li>{{a.name}}</li>
+        </ul>
+    </div>
 </template>
+
+<script>
+    export default {
+        name: 'AuthorsPage',
+        data: () => ({
+                authors: [],
+            }),
+        mounted() {
+            this.getAuthors()
+        },
+        methods: {
+            async getAuthors() {
+            let res = await this.$axios.get('/authors');
+            this.authors = res.data;
+            },
+        },
+    }
+</script>
 
 <style>
 /* home route and active route will show in bold as it matches / and /about */
