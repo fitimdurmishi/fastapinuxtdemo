@@ -5,6 +5,12 @@ from . import models
 from . import schemas
 
 
+# Users table
+def get_user_by_username_password(db: Session, username: str, password: str):
+    return db.query(models.User).filter(models.User.username == username and models.User.password == password).first()
+
+
+
 # Items table
 def get_items(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Item).offset(skip).limit(limit).all()
