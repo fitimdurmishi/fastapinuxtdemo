@@ -1,7 +1,10 @@
 export default {
+  // Target: https://go.nuxtjs.dev/config-target
+  target: 'static',
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'example2',
+    title: 'example3',
     htmlAttrs: {
       lang: 'en'
     },
@@ -22,11 +25,6 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    // '~/plugins/axios.js',
-    // { src: '~/plugins/axios.js', mode: 'client' },
-    // { src: '~/plugins/both-sides.js' },
-    // { src: '~/plugins/client-only.js', mode: 'client' },
-    // { src: '~/plugins/server-only.js', mode: 'server' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -40,17 +38,9 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
-    '@nuxtjs/axios',
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-  },
-
-  publicRuntimeConfig: {
-    axios: {
-      baseURL: 'https://api.nuxtjs.dev'
-    }
-  },
-
+  }
 }

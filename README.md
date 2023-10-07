@@ -31,6 +31,8 @@ curl -X PUT -H "Content-Type: application/json" -d '{"name": "Updated Item Name"
 
 # dashboard
 
+	create-nuxt-app {app-name}
+
 	npm install
 
   To get started:
