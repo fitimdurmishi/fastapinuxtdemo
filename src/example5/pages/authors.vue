@@ -32,7 +32,7 @@
         <b-table 
             small 
             hover 
-            :items="authors" 
+            :items="authorsWithBooks" 
             :fields="fields"
             :filter="filter"
             :filter-included-fields="filterOn"
@@ -59,7 +59,7 @@
         layout: 'navigation',
         name: 'AuthorsPage',
         data: () => ({
-            authors: [],
+            authorsWithBooks: [],
             fields: [{
                     key: "id",
                     label: "Id"
@@ -69,7 +69,7 @@
                     label: "Name"
                 },
                 {
-                    key: "books",
+                    key: "books.length",
                     label: "Nr. of books"
                 }
             ],
@@ -82,12 +82,23 @@
             filterOn: [],
         }),
         async mounted() {
-            await this.getAuthors();
+            await this.loadDataFromDB();
         },
         methods: {
-            async getAuthors() {
-                let res = await this.$axios.get('/authors');
-                this.authors = res.data;
+            async loadDataFromDB() {
+                let resAuthors = await this.$axios.get('/authors');
+                let allAuthors = resAuthors.data;
+                let resBooks = await this.$axios.get('/books/');
+                let allBooks = resBooks.data;
+
+                this.authorsWithBooks = [];
+                for (let i = 0; i < allAuthors.length; i++) {
+                    let author = allAuthors[i];
+                    let filteredBookByAuthor = allBooks.filter(b => b.author_id == author.id);
+                    let authorWithBooks = { id: author.id, name: author.name, books: filteredBookByAuthor };
+                    this.authorsWithBooks.push(authorWithBooks);
+                }
+                console.log('Auhtors list with books: ', this.authorsWithBooks);
             },
             info(item, index, button) {
                 this.infoModal.title = `Row index: ${index}`
