@@ -10,42 +10,57 @@
                   label-size="sm"
                   class="mb-0"
                 >
-                  <b-input-group size="sm">
-                    <b-form-input
-                      id="filter-input"
-                      v-model="filter"
-                      type="search"
-                      placeholder="Type to Search"
-                    ></b-form-input>
-        
-                    <b-input-group-append>
-                      <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
-                    </b-input-group-append>
-                  </b-input-group>
+                    <b-input-group size="sm">
+                        <b-form-input
+                        id="filter-input"
+                        v-model="filter"
+                        type="search"
+                        placeholder="Type to Search"
+                        >
+                        </b-form-input>
+            
+                        <b-input-group-append>
+                        <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                        </b-input-group-append>
+                    </b-input-group>
                 </b-form-group>
             </b-col>
             <b-col lg="6" class="mb-2 text-right">
-                <b-button size="sm" v-on:click="createAuthor">Create Author</b-button>
+                <!-- <b-button size="sm" v-on:click="createAuthor">Create Author</b-button> -->
+                <div>
+                    <b-button size="sm" v-b-modal.modal-add-author>Add Author</b-button>
+                    <b-modal id="modal-add-author" title="Add New Author" ok-only>
+                        <div>
+                            <b-form @submit="onSubmit" @reset="onReset">
+                              
+                              <b-form-group id="input-group-2" label="Author Name:" label-for="input-2">
+                                <b-form-input
+                                  id="input-2"
+                                  v-model="form.name"
+                                  placeholder="Enter name of the author"
+                                  required
+                                ></b-form-input>
+                              </b-form-group>
+                        
+                              <b-button type="submit" variant="primary">Submit</b-button>
+                              <b-button type="reset" variant="danger">Reset</b-button>
+                            </b-form>
+                          </div>
+                    </b-modal>
+                  </div>
             </b-col>
         </b-row>
-
+        
         <b-table 
             small 
-            hover 
+            hover
             :items="authorsWithBooks" 
             :fields="fields"
             :filter="filter"
             :filter-included-fields="filterOn"
             @row-clicked="myRowClickHandler"
         >
-            <template #cell(actions)="row">
-                <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
-                    Info modal
-                </b-button>
-                </template>
         </b-table>
-
-        
 
         <!-- Info modal -->
         <b-modal :id="infoModal.id" :title="infoModal.title" ok-only @hide="resetInfoModal">
@@ -56,6 +71,8 @@
 
 <script>
     export default {
+        components: {
+        },
         layout: 'navigation',
         name: 'AuthorsPage',
         data: () => ({
@@ -80,6 +97,10 @@
             },
             filter: null,
             filterOn: [],
+            form: {
+                id: 0,
+                name: '',
+            },
         }),
         async mounted() {
             await this.loadDataFromDB();
@@ -101,7 +122,8 @@
                 console.log('Auhtors list with books: ', this.authorsWithBooks);
             },
             info(item, index, button) {
-                this.infoModal.title = `Row index: ${index}`
+                // this.infoModal.title = `Row index: ${index}`
+                this.infoModal.title = `Edit: ${item.name}`
                 this.infoModal.content = JSON.stringify(item, null, 2)
                 this.$root.$emit('bv::show::modal', this.infoModal.id, button)
             },
@@ -109,14 +131,31 @@
                 this.infoModal.title = ''
                 this.infoModal.content = ''
             },
-            createAuthor() {
-                console.log('Create Author');
-            },
             myRowClickHandler(record, index) {
                 console.log('myRowClickHandler', record);
 
                 // this.info(record.item, record.index, $event.target)
                 this.info(record, index);
+
+                // this.dialogType = "EDIT";
+                // this.modalVisible = true;
+            },
+            createAuthor() {
+                console.log("createAuthor");
+            },
+            onSubmit(event) {
+                event.preventDefault()
+                alert(JSON.stringify(this.form))
+            },
+            onReset(event) {
+                event.preventDefault()
+                // Reset our form values
+                this.form.name = '';
+                // Trick to reset/clear native browser form validation state
+                this.show = false;
+                this.$nextTick(() => {
+                    this.show = true
+                })
             },
         },
     }
