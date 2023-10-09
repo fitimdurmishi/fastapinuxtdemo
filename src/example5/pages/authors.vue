@@ -172,8 +172,6 @@
 
 <script>
     export default {
-        components: {
-        },
         layout: 'navigation',
         name: 'AuthorsPage',
         data: () => ({
@@ -238,7 +236,6 @@
         methods: {
             async loadDataFromDB() {
                 this.isBusyAuthorsTable = true;
-                // this.selectedRecord = { id:0, name: null, books: [] }; // reset
                 this.resetUI();
 
                 let resAuthors = await this.$axios.get('/authors');
@@ -265,17 +262,16 @@
                 // alert(JSON.stringify(this.form));
 
                 await this.$axios.post('/authors/', {
-                    id: this.selectedRecord.id,
-                    name: this.selectedRecord.name
-                })
-                .then(function (response) {
-                    console.log(response);
-                    alert('SUCCESS');
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    alert('FAILED');
-                });
+                        id: this.selectedRecord.id,
+                        name: this.selectedRecord.name
+                    })
+                    .then(function (response) {
+                        alert('SUCCESS');
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        alert('FAILED');
+                    });
 
                 this.$bvModal.hide('modal-add-author'); // hide modal
                 
@@ -283,38 +279,32 @@
             },
             async onSubmitEditAuthor(event) {
                 event.preventDefault();
-                // alert(JSON.stringify(this.form));
-
-                console.log('selectedRecord: ', this.selectedRecord.name);
 
                 await this.$axios.put(`/authors/${this.selectedRecord.id}`, {
                     id: this.selectedRecord.id,
                     name: this.selectedRecord.name
-                })
-                .then(function (response) {
-                    console.log(response);
-                    alert('SUCCESS');
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    alert('FAILED');
-                });
+                    })
+                    .then(function (response) {
+                        alert('SUCCESS');
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        alert('FAILED');
+                    });
                 
                 this.$bvModal.hide('modal-edit-author'); // hide modal
 
                 await this.loadDataFromDB();
             },
             async deleteAuthor(selectedAuthorId) {
-                console.log('selectedAuthorId', selectedAuthorId);
                 await this.$axios.delete(`/authors/${selectedAuthorId}`)
-                .then(function (response) {
-                    console.log(response);
-                    alert('SUCCESS');                    
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    alert('FAILED');
-                });
+                    .then(function (response) {
+                        alert('SUCCESS');
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        alert('FAILED');
+                    });
 
                 this.$bvModal.hide('modal-edit-author'); // hide modal
                 
@@ -322,15 +312,6 @@
                 await this.loadDataFromDB();
             },
             onHideModal() {
-                console.log("onHideModal");
-                this.selectedRecord = { id:0, name: null, books: [] }; // reset
-
-                this.resetUI();
-            },
-            onHideModalBook() {
-                console.log("onHideModalBook");
-                // this.selectedRecord = { id:0, name: null, books: [] }; // reset
-
                 this.resetUI();
             },
             resetUI() {
@@ -340,30 +321,26 @@
                 this.bookEditorType = 'ADD';
             },
             editBookItemModal(selectedBook) {
-                let bookRecordToEdit = selectedBook;
-                console.log("bookRecordToEdit: ", bookRecordToEdit);
                 // TODO: implement EDIT book by id
 
-                console.log('selectedBookTableRow', bookRecordToEdit);
-                this.selectedRecordBook = bookRecordToEdit;
+                // console.log('selectedBookTableRow', bookRecordToEdit);
+                this.selectedRecordBook = selectedBook;
 
                 this.showBookEditor = true;
                 this.bookEditorType = 'EDIT';
             },
             async deleteBookItem(selectedBookIndex) {
                 let bookRecordToDelete = this.selectedRecord.books.at(selectedBookIndex);
-                console.log("bookRecordToDelete: ", bookRecordToDelete);
                 // TODO: implement DELETE book by id
 
                 await this.$axios.delete(`/books/${bookRecordToDelete.id}`)
-                .then(function (response) {
-                    console.log(response);
-                    alert('SUCCESS');                    
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    alert('FAILED');
-                });
+                    .then(function (response) {
+                        alert('SUCCESS');
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        alert('FAILED');
+                    });
                 
                 this.selectedRecord.books.splice(selectedBookIndex, 1); // remove element at index (locally)
             },
@@ -428,9 +405,6 @@
                             alert('FAILED');
                         });
 
-                    // refresh the object locally
-                    // this.selectedRecord.books.push(responseBook);
-
                     // refresh local variables
                     this.selectedRecordBook = { id: 0, name: null, page_numbers: null, author_id: 0 }; // reset
                     this.showBookEditor = false;
@@ -438,7 +412,6 @@
                 }
             },
             selectedBookTableRow(bookRecord) {
-                console.log('selectedBookTableRow', bookRecord);
                 this.selectedRecordBook = bookRecord;
 
                 this.showBookEditor = true;
