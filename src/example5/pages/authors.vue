@@ -53,7 +53,7 @@
                         <div>                            
                             <b-form @submit="onSubmitEditAuthor">
                                 <b-row>
-                                    <b-col cols="10">                                    
+                                    <b-col cols="9">                                    
                                         <b-form-group id="input-group-1">
                                             <b-form-input
                                                 id="input-1"
@@ -63,8 +63,11 @@
                                             ></b-form-input>                                        
                                         </b-form-group>                                    
                                     </b-col>                                
-                                    <b-col cols="2">
-                                        <b-button type="submit" variant="primary" class="float-right">Update</b-button>
+                                    <b-col cols="1">
+                                        <b-button type="submit" variant="primary" class="float-left" size="sm">Update</b-button>
+                                    </b-col>
+                                    <b-col cols="1">
+                                        <b-button variant="danger" size="sm" class="float-left" @click="deleteAuthor(selectedRecord.id)">Delete</b-button>
                                     </b-col>
                                 </b-row>
                             </b-form>
@@ -78,8 +81,8 @@
                                 >
                                     <template #cell(actions)="row">
                                         <div class="float-left">
-                                            <b-button @click="editBookItemModal(row.item)">Edit</b-button>
-                                            <b-button @click="deleteBookItem(row.index)">Delete</b-button>
+                                            <b-button size="sm" @click="editBookItemModal(row.item)">Edit</b-button>
+                                            <b-button size="sm" @click="deleteBookItem(row.index)">Delete</b-button>
                                         </div>                                        
                                     </template>
 
@@ -229,6 +232,23 @@
                 
                 this.$bvModal.hide('modal-edit-author'); // hide modal
 
+                await this.loadDataFromDB();
+            },
+            async deleteAuthor(selectedAuthorId) {
+                console.log('selectedAuthorId', selectedAuthorId);
+                await this.$axios.delete(`http://127.0.0.1:8000/authors/${selectedAuthorId}`)
+                .then(function (response) {
+                    console.log(response);
+                    alert('SUCCESS');                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert('FAILED');
+                });
+
+                this.$bvModal.hide('modal-edit-author'); // hide modal
+                
+                // this.selectedRecord.books.splice(selectedBookIndex, 1); // remove element at index (locally)
                 await this.loadDataFromDB();
             },
             onHideModal() {
