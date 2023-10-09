@@ -49,7 +49,7 @@
                     </b-modal>
 
                     <!-- modal-edit-author -->
-                    <b-modal id="modal-edit-author" title="Edit Author" hide-footer @hide="onHideModal">
+                    <b-modal id="modal-edit-author" title="Edit Author" hide-footer @hide="onHideModal" size="lg">
                         <div>                            
                             <b-form @submit="onSubmitEditAuthor">
                                 <b-row>
@@ -77,8 +77,10 @@
                                     :fields="fieldsForBooks"
                                 >
                                     <template #cell(actions)="row">
-                                        <b-button @click="openEditModal(row.item)">Edit</b-button>
-                                        <b-button @click="deleteItem(row.index)">Delete</b-button>
+                                        <div class="float-left">
+                                            <b-button @click="editBookItemModal(row.item)">Edit</b-button>
+                                            <b-button @click="deleteBookItem(row.index)">Delete</b-button>
+                                        </div>                                        
                                     </template>
 
                                 </b-table>
@@ -189,7 +191,7 @@
                 event.preventDefault();
                 // alert(JSON.stringify(this.form));
 
-                this.$axios.post('http://127.0.0.1:8000/authors/', {
+                await this.$axios.post('http://127.0.0.1:8000/authors/', {
                     id: this.selectedRecord.id,
                     name: this.selectedRecord.name
                 })
@@ -212,7 +214,7 @@
 
                 console.log('selectedRecord: ', this.selectedRecord.name);
 
-                this.$axios.put(`http://127.0.0.1:8000/authors/${this.selectedRecord.id}`, {
+                await this.$axios.put(`http://127.0.0.1:8000/authors/${this.selectedRecord.id}`, {
                     id: this.selectedRecord.id,
                     name: this.selectedRecord.name
                 })
@@ -233,11 +235,27 @@
                 console.log("onHideModal");
                 this.selectedRecord = { id:0, name: null, books: [] }; // reset
             },
-            deleteItem(index) {
-                console.log("deleteItem: ", index);
-                // Implement delete logic here
-                this.selectedRecord.books.splice(index, 1);
-                console.log("deleteItem: ", this.selectedRecord.books.splice(index, 1));
+            editBookItemModal(selectedBook) {
+                let bookRecordToEdit = selectedBook;
+                console.log("bookRecordToEdit: ", bookRecordToEdit);
+                // TODO: implement EDIT book by id
+            },
+            async deleteBookItem(selectedBookIndex) {
+                let bookRecordToDelete = this.selectedRecord.books.at(selectedBookIndex);
+                console.log("bookRecordToDelete: ", bookRecordToDelete);
+                // TODO: implement DELETE book by id
+
+                await this.$axios.delete(`http://127.0.0.1:8000/books/${bookRecordToDelete.id}`)
+                .then(function (response) {
+                    console.log(response);
+                    alert('SUCCESS');                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert('FAILED');
+                });
+                
+                this.selectedRecord.books.splice(selectedBookIndex, 1); // remove element at index (locally)
             }
         },
     }
