@@ -18,7 +18,7 @@
       },
       methods: {
           async getBooks() {
-          let res = await this.$axios.get('/books');
+          let res = await this.$axios.get('http://127.0.0.1:8000/books');
           this.books = res.data;
           console.log(this.books);
           },

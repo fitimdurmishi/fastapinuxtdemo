@@ -26,24 +26,43 @@
                 </b-form-group>
             </b-col>
             <b-col lg="6" class="mb-2 text-right">
-                <!-- <b-button size="sm" v-on:click="createAuthor">Create Author</b-button> -->
                 <div>
-                    <b-button size="sm" v-b-modal.modal-add-author>Add Author</b-button>
-                    <b-modal id="modal-add-author" title="Add New Author" ok-only>
+                    <b-button size="sm" v-b-modal.modal-add-author >Add Author</b-button>
+
+                    <!-- modal-add-author -->
+                    <b-modal id="modal-add-author" title="Add New Author" hide-footer>
                         <div>
-                            <b-form @submit="onSubmit" @reset="onReset">
+                            <b-form @submit="onSubmitAddAuthor">
                               
-                              <b-form-group id="input-group-2" label="Author Name:" label-for="input-2">
+                              <b-form-group id="input-group-2">
                                 <b-form-input
                                   id="input-2"
-                                  v-model="form.name"
+                                  v-model="selectedRecord.name"
                                   placeholder="Enter name of the author"
                                   required
                                 ></b-form-input>
                               </b-form-group>
                         
-                              <b-button type="submit" variant="primary">Submit</b-button>
-                              <b-button type="reset" variant="danger">Reset</b-button>
+                              <b-button type="submit" variant="primary" class="float-right">Add</b-button>
+                            </b-form>
+                          </div>
+                    </b-modal>
+
+                    <!-- modal-edit-author -->
+                    <b-modal id="modal-edit-author" title="Edit Author" hide-footer>
+                        <div>
+                            <b-form @submit="onSubmitEditAuthor">
+                              
+                              <b-form-group id="input-group-2">
+                                <b-form-input
+                                  id="input-2"
+                                  v-model="selectedRecord.name"
+                                  placeholder="Enter name of the author"
+                                  required
+                                ></b-form-input>
+                              </b-form-group>
+                        
+                              <b-button type="submit" variant="primary" class="float-right">Update</b-button>
                             </b-form>
                           </div>
                     </b-modal>
@@ -62,10 +81,6 @@
         >
         </b-table>
 
-        <!-- Info modal -->
-        <b-modal :id="infoModal.id" :title="infoModal.title" ok-only @hide="resetInfoModal">
-            <pre>{{ infoModal.content }}</pre>
-        </b-modal>
     </b-container>
 </template>
 
@@ -101,15 +116,21 @@
                 id: 0,
                 name: '',
             },
+            selectedRecord: {
+                id: 0,
+                name: null
+            }
         }),
         async mounted() {
             await this.loadDataFromDB();
         },
         methods: {
             async loadDataFromDB() {
-                let resAuthors = await this.$axios.get('/authors');
+                this.selectedRecord = {id:0, name: null }; // reset
+
+                let resAuthors = await this.$axios.get('http://127.0.0.1:8000/authors');
                 let allAuthors = resAuthors.data;
-                let resBooks = await this.$axios.get('/books/');
+                let resBooks = await this.$axios.get('http://127.0.0.1:8000/books/');
                 let allBooks = resBooks.data;
 
                 this.authorsWithBooks = [];
@@ -121,41 +142,57 @@
                 }
                 console.log('Auhtors list with books: ', this.authorsWithBooks);
             },
-            info(item, index, button) {
-                // this.infoModal.title = `Row index: ${index}`
-                this.infoModal.title = `Edit: ${item.name}`
-                this.infoModal.content = JSON.stringify(item, null, 2)
-                this.$root.$emit('bv::show::modal', this.infoModal.id, button)
-            },
-            resetInfoModal() {
-                this.infoModal.title = ''
-                this.infoModal.content = ''
-            },
-            myRowClickHandler(record, index) {
+            myRowClickHandler(record) {
                 console.log('myRowClickHandler', record);
 
-                // this.info(record.item, record.index, $event.target)
-                this.info(record, index);
+                this.selectedRecord = record;
+                // show modal with id: modal-edit-author
+                // this.$root.$emit('bv::show::modal', 'modal-edit-author');
+                this.$bvModal.show('modal-edit-author');
+            },
+            async onSubmitAddAuthor(event) {
+                event.preventDefault();
+                // alert(JSON.stringify(this.form));
 
-                // this.dialogType = "EDIT";
-                // this.modalVisible = true;
-            },
-            createAuthor() {
-                console.log("createAuthor");
-            },
-            onSubmit(event) {
-                event.preventDefault()
-                alert(JSON.stringify(this.form))
-            },
-            onReset(event) {
-                event.preventDefault()
-                // Reset our form values
-                this.form.name = '';
-                // Trick to reset/clear native browser form validation state
-                this.show = false;
-                this.$nextTick(() => {
-                    this.show = true
+                this.$axios.post('http://127.0.0.1:8000/authors/', {
+                    id: this.selectedRecord.id,
+                    name: this.selectedRecord.name
                 })
+                .then(function (response) {
+                    console.log(response);
+                    alert('SUCCESS');
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert('FAILED');
+                });
+
+                this.$bvModal.hide('modal-add-author'); // hide modal
+                
+                await this.loadDataFromDB(); // reload
+            },
+            async onSubmitEditAuthor(event) {
+                event.preventDefault();
+                // alert(JSON.stringify(this.form));
+
+                console.log('selectedRecord: ', this.selectedRecord.name);
+
+                this.$axios.put(`http://127.0.0.1:8000/authors/${this.selectedRecord.id}`, {
+                    id: this.selectedRecord.id,
+                    name: this.selectedRecord.name
+                })
+                .then(function (response) {
+                    console.log(response);
+                    alert('SUCCESS');
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert('FAILED');
+                });
+                
+                this.$bvModal.hide('modal-edit-author'); // hide modal
+
+                await this.loadDataFromDB();
             },
         },
     }
