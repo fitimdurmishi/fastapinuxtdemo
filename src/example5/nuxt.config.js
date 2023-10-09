@@ -44,7 +44,7 @@ export default {
   },
 
   proxy: {
-    '/api/': 'http://127.0.0.1:8000'  // we do this beacuse of CORS
+    '/api/': 'http://127.0.0.1:8001'  // we do this beacuse of CORS
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

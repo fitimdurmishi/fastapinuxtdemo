@@ -64,39 +64,79 @@
                                         </b-form-group>                                    
                                     </b-col>                                
                                     <b-col cols="1">
-                                        <b-button type="submit" variant="primary" class="float-left" size="sm">Update</b-button>
+                                        <b-button type="submit" variant="primary" class="float-left" size="sm">Save</b-button>
                                     </b-col>
                                     <b-col cols="1">
                                         <b-button variant="danger" size="sm" class="float-left" @click="deleteAuthor(selectedRecord.id)">Delete</b-button>
                                     </b-col>
                                 </b-row>
                             </b-form>
+
+                            <!-- book editor form, used for add and update of the book -->
+                            <div class="pt-5">
+                                <b-button size="sm" @click="showBookEditorHandler">Add Book</b-button>
+                                <div v-if="showBookEditor" class="pt-2">
+                                    <b-form @submit="onSubmitEditorBook">
+                                        <b-row>
+                                            <b-col cols="6">
+                                                <b-form-group id="input-group-1">
+                                                    <b-form-input
+                                                        id="input-1"
+                                                        v-model="selectedRecordBook.name"
+                                                        placeholder="Enter name of the book"
+                                                        required
+                                                    ></b-form-input>
+                                                </b-form-group>
+                                            </b-col>
+                                            <b-col cols="3">
+                                                <b-form-group id="input-group-2">
+                                                    <b-form-input
+                                                        id="input-2"
+                                                        v-model="selectedRecordBook.page_numbers"
+                                                        placeholder="Number of pages"
+                                                        required
+                                                    ></b-form-input>
+                                                </b-form-group>
+                                            </b-col>
+                                            <b-col cols="3">
+                                                <b-button size="sm" type="submit" variant="primary" class="float-left">Save</b-button>
+                                            </b-col>
+                                        </b-row>
+                                    </b-form>
+                                </div>
+                            </div>
+
                             <div v-if="selectedRecord.books.length > 0" class="pt-3">
-                                <p>List of books</p>
                                 <b-table 
                                     small 
                                     hover 
                                     :items="selectedRecord.books"
                                     :fields="fieldsForBooks"
+                                    @row-clicked="selectedBookTableRow"
                                 >
                                     <template #cell(actions)="row">
                                         <div class="float-left">
                                             <b-button size="sm" @click="editBookItemModal(row.item)">Edit</b-button>
-                                            <b-button size="sm" @click="deleteBookItem(row.index)">Delete</b-button>
+                                            <b-button variant="danger"  size="sm" @click="deleteBookItem(row.index)">Delete</b-button>
                                         </div>                                        
                                     </template>
 
                                 </b-table>
                             </div>
                             <div v-else>
-                                No books for this author
+                                <b-row>
+                                    <b-col cols="12">
+                                        No books for this author
+                                    </b-col>
+                                </b-row>
                             </div>                 
-                          </div>
+                        </div>
                     </b-modal>
                   </div>
             </b-col>
         </b-row>
         
+        <!-- Authors table -->
         <b-table 
             small 
             hover
@@ -104,9 +144,28 @@
             :fields="fields"
             :filter="filter"
             :filter-included-fields="filterOn"
-            @row-clicked="myRowClickHandler"
+            @row-clicked="selectedAuthorTableRow"
+            :per-page="perPage"
+            :current-page="currentPage"
+            :busy="isBusyAuthorsTable"
         >
+            <template #table-busy>
+                <div class="text-center my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Loading...</strong>
+                </div>
+            </template>
         </b-table>
+
+        <b-pagination
+            v-model="currentPage"
+            size="sm"
+            :total-rows="rows"
+            :per-page="perPage"
+            aria-controls="my-table"
+        >
+        </b-pagination>
+        <p class="mt-3">Current Page: {{ currentPage }} [10 rows per page]</p>
 
     </b-container>
 </template>
@@ -118,6 +177,9 @@
         layout: 'navigation',
         name: 'AuthorsPage',
         data: () => ({
+            perPage: 10,
+            currentPage: 1,
+            isBusyAuthorsTable: false,
             authorsWithBooks: [],
             fields: [{
                     key: "id",
@@ -151,26 +213,37 @@
             ],
             filter: null,
             filterOn: [],
-            form: {
-                id: 0,
-                name: '',
-            },
             selectedRecord: {
                 id: 0,
                 name: null,
                 books: []
-            }
+            },
+            selectedRecordBook: {
+                id: 0,
+                name: null,
+                page_numbers: null,
+                author_id: 0
+            },
+            showBookEditor: false,
+            bookEditorType: 'ADD'
         }),
+        computed: {
+            rows() {
+                return this.authorsWithBooks.length
+            }
+        },
         async mounted() {
             await this.loadDataFromDB();
         },
         methods: {
             async loadDataFromDB() {
-                this.selectedRecord = { id:0, name: null, books: [] }; // reset
+                this.isBusyAuthorsTable = true;
+                // this.selectedRecord = { id:0, name: null, books: [] }; // reset
+                this.resetUI();
 
-                let resAuthors = await this.$axios.get('http://127.0.0.1:8000/authors');
+                let resAuthors = await this.$axios.get('/authors');
                 let allAuthors = resAuthors.data;
-                let resBooks = await this.$axios.get('http://127.0.0.1:8000/books/');
+                let resBooks = await this.$axios.get('/books/');
                 let allBooks = resBooks.data;
 
                 this.authorsWithBooks = [];
@@ -180,21 +253,18 @@
                     let authorWithBooks = { id: author.id, name: author.name, books: filteredBookByAuthor };
                     this.authorsWithBooks.push(authorWithBooks);
                 }
-                console.log('Auhtors list with books: ', this.authorsWithBooks);
-            },
-            myRowClickHandler(record) {
-                console.log('myRowClickHandler', record);
 
+                this.isBusyAuthorsTable = false;
+            },
+            selectedAuthorTableRow(record) {
                 this.selectedRecord = record;
-                // show modal with id: modal-edit-author
-                // this.$root.$emit('bv::show::modal', 'modal-edit-author');
                 this.$bvModal.show('modal-edit-author');
             },
             async onSubmitAddAuthor(event) {
                 event.preventDefault();
                 // alert(JSON.stringify(this.form));
 
-                await this.$axios.post('http://127.0.0.1:8000/authors/', {
+                await this.$axios.post('/authors/', {
                     id: this.selectedRecord.id,
                     name: this.selectedRecord.name
                 })
@@ -217,7 +287,7 @@
 
                 console.log('selectedRecord: ', this.selectedRecord.name);
 
-                await this.$axios.put(`http://127.0.0.1:8000/authors/${this.selectedRecord.id}`, {
+                await this.$axios.put(`/authors/${this.selectedRecord.id}`, {
                     id: this.selectedRecord.id,
                     name: this.selectedRecord.name
                 })
@@ -236,7 +306,7 @@
             },
             async deleteAuthor(selectedAuthorId) {
                 console.log('selectedAuthorId', selectedAuthorId);
-                await this.$axios.delete(`http://127.0.0.1:8000/authors/${selectedAuthorId}`)
+                await this.$axios.delete(`/authors/${selectedAuthorId}`)
                 .then(function (response) {
                     console.log(response);
                     alert('SUCCESS');                    
@@ -254,18 +324,38 @@
             onHideModal() {
                 console.log("onHideModal");
                 this.selectedRecord = { id:0, name: null, books: [] }; // reset
+
+                this.resetUI();
+            },
+            onHideModalBook() {
+                console.log("onHideModalBook");
+                // this.selectedRecord = { id:0, name: null, books: [] }; // reset
+
+                this.resetUI();
+            },
+            resetUI() {
+                this.selectedRecord = { id:0, name: null, books: [] }; // reset
+                this.selectedRecordBook = { id: 0, name: null, page_numbers: null, author_id: 0 }; // reset
+                this.showBookEditor = false;
+                this.bookEditorType = 'ADD';
             },
             editBookItemModal(selectedBook) {
                 let bookRecordToEdit = selectedBook;
                 console.log("bookRecordToEdit: ", bookRecordToEdit);
                 // TODO: implement EDIT book by id
+
+                console.log('selectedBookTableRow', bookRecordToEdit);
+                this.selectedRecordBook = bookRecordToEdit;
+
+                this.showBookEditor = true;
+                this.bookEditorType = 'EDIT';
             },
             async deleteBookItem(selectedBookIndex) {
                 let bookRecordToDelete = this.selectedRecord.books.at(selectedBookIndex);
                 console.log("bookRecordToDelete: ", bookRecordToDelete);
                 // TODO: implement DELETE book by id
 
-                await this.$axios.delete(`http://127.0.0.1:8000/books/${bookRecordToDelete.id}`)
+                await this.$axios.delete(`/books/${bookRecordToDelete.id}`)
                 .then(function (response) {
                     console.log(response);
                     alert('SUCCESS');                    
@@ -276,7 +366,84 @@
                 });
                 
                 this.selectedRecord.books.splice(selectedBookIndex, 1); // remove element at index (locally)
-            }
+            },
+            showBookEditorHandler() {
+                this.showBookEditor = !this.showBookEditor;
+
+                this.selectedRecordBook = { id: 0, name: null, page_numbers: null, author_id: 0 }; // reset
+                this.bookEditorType = 'ADD';
+            },
+            async onSubmitEditorBook(event) {
+                event.preventDefault();
+                // // alert(JSON.stringify(this.form));
+
+                var responseBook = null;
+
+                if (this.bookEditorType == 'ADD') {
+                    const bookObjectToAdd = {
+                        id: this.selectedRecordBook.id,
+                        name: this.selectedRecordBook.name,
+                        page_numbers: this.selectedRecordBook.page_numbers,
+                        author_id: this.selectedRecord.id
+                    };
+
+                    await this.$axios.post('/books/', bookObjectToAdd)
+                        .then(function (response) {
+                            // console.log(response);
+                            alert('SUCCESS');
+                            responseBook = response.data;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                            alert('FAILED');
+                        });
+
+                    // refresh the object locally
+                    this.selectedRecord.books.push(responseBook);
+
+                    // refresh local variables
+                    this.selectedRecordBook = { id: 0, name: null, page_numbers: null, author_id: 0 }; // reset
+                    this.showBookEditor = false;
+                    this.bookEditorType = 'ADD';
+                    
+                    // await this.loadDataFromDB(); // reload
+                } else if (this.bookEditorType == 'EDIT') {
+                    // TODO: handle edit here
+
+                    const bookObjectToUpdate= {
+                        id: this.selectedRecordBook.id,
+                        name: this.selectedRecordBook.name,
+                        page_numbers: this.selectedRecordBook.page_numbers,
+                        author_id: this.selectedRecordBook.author_id
+                    };
+
+                    await this.$axios.put(`/books/${bookObjectToUpdate.id}`, bookObjectToUpdate)
+                        .then(function (response) {
+                            // console.log(response);
+                            alert('SUCCESS');
+                            responseBook = response.data;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                            alert('FAILED');
+                        });
+
+                    // refresh the object locally
+                    // this.selectedRecord.books.push(responseBook);
+
+                    // refresh local variables
+                    this.selectedRecordBook = { id: 0, name: null, page_numbers: null, author_id: 0 }; // reset
+                    this.showBookEditor = false;
+                    this.bookEditorType = 'ADD';
+                }
+            },
+            selectedBookTableRow(bookRecord) {
+                console.log('selectedBookTableRow', bookRecord);
+                this.selectedRecordBook = bookRecord;
+
+                this.showBookEditor = true;
+                this.bookEditorType = 'EDIT';
+            },
         },
     }
 </script>
