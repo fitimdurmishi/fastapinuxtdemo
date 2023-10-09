@@ -126,7 +126,7 @@
                             <div v-else>
                                 <b-row>
                                     <b-col cols="12">
-                                        No books for this author
+                                        <p class="pt-2">No books registered for {{selectedRecord.name}}</p>
                                     </b-col>
                                 </b-row>
                             </div>                 
