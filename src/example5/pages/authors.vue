@@ -68,15 +68,24 @@
                                     </b-col>
                                 </b-row>
                             </b-form>
-                            <div>
+                            <div v-if="selectedRecord.books.length > 0" class="pt-3">
+                                <p>List of books</p>
                                 <b-table 
                                     small 
                                     hover 
                                     :items="selectedRecord.books"
                                     :fields="fieldsForBooks"
                                 >
+                                    <template #cell(actions)="row">
+                                        <b-button @click="openEditModal(row.item)">Edit</b-button>
+                                        <b-button @click="deleteItem(row.index)">Delete</b-button>
+                                    </template>
+
                                 </b-table>
-                            </div>                            
+                            </div>
+                            <div v-else>
+                                No books for this author
+                            </div>                 
                           </div>
                     </b-modal>
                   </div>
@@ -129,6 +138,10 @@
                 {
                     key: "page_numbers",
                     label: "Nr. pages"
+                },
+                {
+                    key: "actions",
+                    label: "Actions"
                 }
             ],
             filter: null,
@@ -219,6 +232,12 @@
             onHideModal() {
                 console.log("onHideModal");
                 this.selectedRecord = { id:0, name: null, books: [] }; // reset
+            },
+            deleteItem(index) {
+                console.log("deleteItem: ", index);
+                // Implement delete logic here
+                this.selectedRecord.books.splice(index, 1);
+                console.log("deleteItem: ", this.selectedRecord.books.splice(index, 1));
             }
         },
     }
