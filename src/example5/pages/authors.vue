@@ -30,13 +30,13 @@
                     <b-button size="sm" v-b-modal.modal-add-author >Add Author</b-button>
 
                     <!-- modal-add-author -->
-                    <b-modal id="modal-add-author" title="Add New Author" hide-footer>
+                    <b-modal id="modal-add-author" title="Add New Author" hide-footer @hide="onHideModal">
                         <div>
                             <b-form @submit="onSubmitAddAuthor">
                               
-                              <b-form-group id="input-group-2">
+                              <b-form-group id="input-group-1">
                                 <b-form-input
-                                  id="input-2"
+                                  id="input-1"
                                   v-model="selectedRecord.name"
                                   placeholder="Enter name of the author"
                                   required
@@ -49,21 +49,34 @@
                     </b-modal>
 
                     <!-- modal-edit-author -->
-                    <b-modal id="modal-edit-author" title="Edit Author" hide-footer>
-                        <div>
+                    <b-modal id="modal-edit-author" title="Edit Author" hide-footer @hide="onHideModal">
+                        <div>                            
                             <b-form @submit="onSubmitEditAuthor">
-                              
-                              <b-form-group id="input-group-2">
-                                <b-form-input
-                                  id="input-2"
-                                  v-model="selectedRecord.name"
-                                  placeholder="Enter name of the author"
-                                  required
-                                ></b-form-input>
-                              </b-form-group>
-                        
-                              <b-button type="submit" variant="primary" class="float-right">Update</b-button>
+                                <b-row>
+                                    <b-col cols="10">                                    
+                                        <b-form-group id="input-group-1">
+                                            <b-form-input
+                                                id="input-1"
+                                                v-model="selectedRecord.name"
+                                                placeholder="Enter name of the author"
+                                                required
+                                            ></b-form-input>                                        
+                                        </b-form-group>                                    
+                                    </b-col>                                
+                                    <b-col cols="2">
+                                        <b-button type="submit" variant="primary" class="float-right">Update</b-button>
+                                    </b-col>
+                                </b-row>
                             </b-form>
+                            <div>
+                                <b-table 
+                                    small 
+                                    hover 
+                                    :items="selectedRecord.books"
+                                    :fields="fieldsForBooks"
+                                >
+                                </b-table>
+                            </div>                            
                           </div>
                     </b-modal>
                   </div>
@@ -105,11 +118,19 @@
                     label: "Nr. of books"
                 }
             ],
-            infoModal: {
-                id: 'info-modal',
-                title: '',
-                content: ''
-            },
+            fieldsForBooks: [{
+                    key: "id",
+                    label: "Id"
+                },
+                {
+                    key: "name",
+                    label: "Name"
+                },
+                {
+                    key: "page_numbers",
+                    label: "Nr. pages"
+                }
+            ],
             filter: null,
             filterOn: [],
             form: {
@@ -118,7 +139,8 @@
             },
             selectedRecord: {
                 id: 0,
-                name: null
+                name: null,
+                books: []
             }
         }),
         async mounted() {
@@ -126,7 +148,7 @@
         },
         methods: {
             async loadDataFromDB() {
-                this.selectedRecord = {id:0, name: null }; // reset
+                this.selectedRecord = { id:0, name: null, books: [] }; // reset
 
                 let resAuthors = await this.$axios.get('http://127.0.0.1:8000/authors');
                 let allAuthors = resAuthors.data;
@@ -194,6 +216,10 @@
 
                 await this.loadDataFromDB();
             },
+            onHideModal() {
+                console.log("onHideModal");
+                this.selectedRecord = { id:0, name: null, books: [] }; // reset
+            }
         },
     }
 </script>
