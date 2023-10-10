@@ -76,7 +76,6 @@ def login_for_access_token(form_data: schemas.User, db: Session = Depends(get_db
     access_token = create_jwt_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
-
 @app.get("/secure-data")
 def get_secure_data(token: str = Depends(oauth2_scheme)):
     try:
