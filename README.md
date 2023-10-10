@@ -8,6 +8,7 @@ python -m uvicorn main:app --reload
 uvicorn main:app --reload
 uvicorn main:app --reload --port 8001
 
+-- when starting on Windows we need to add: 'python -m'
 python -m uvicorn main3:app --reload
 
 uvicorn api2.main:app --reload
