@@ -132,7 +132,7 @@
                             </div>                 
                         </div>
                     </b-modal>
-                  </div>
+                </div>
             </b-col>
         </b-row>
         
@@ -165,7 +165,7 @@
             aria-controls="my-table"
         >
         </b-pagination>
-        <p class="mt-3">Current Page: {{ currentPage }} [10 rows per page]</p>
+        <p class="mt-3">Current Page: {{ currentPage }} [{{ perPage }} rows per page]</p>
 
     </b-container>
 </template>
@@ -175,7 +175,7 @@
         layout: 'navigation',
         name: 'AuthorsPage',
         data: () => ({
-            perPage: 10,
+            perPage: 15,
             currentPage: 1,
             isBusyAuthorsTable: false,
             authorsWithBooks: [],
