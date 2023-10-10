@@ -47,6 +47,7 @@
                                     <b-form-input
                                         id="input-2"
                                         v-model="selectedRecordBook.page_numbers"
+                                        type="number"
                                         placeholder="Number of pages"
                                         required
                                     ></b-form-input>
@@ -84,6 +85,7 @@
                                             <b-form-input
                                                 id="input-2"
                                                 v-model="selectedRecordBook.page_numbers"
+                                                type="number"
                                                 placeholder="Number of pages"
                                                 required
                                             ></b-form-input>
