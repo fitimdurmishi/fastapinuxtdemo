@@ -49,6 +49,12 @@ def get_db():
         db.close()
 
 
+@app.on_event("startup")
+async def startup_event():
+    db = SessionLocal()
+    user = crud.create_intial_user(db, "fito", "fito")
+    return user
+
 
 # ****** Auth endpoints and functions
 def create_jwt_token(data: dict):

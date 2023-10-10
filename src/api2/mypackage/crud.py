@@ -9,6 +9,21 @@ from . import schemas
 def get_user_by_username_password(db: Session, username: str, password: str):
     return db.query(models.User).filter(models.User.username == username and models.User.password == password).first()
 
+# we call this on app start, to seed the Users table with initial record fito/fito
+def create_intial_user(db: Session, username: str, password: str):
+    user = db.query(models.User).filter(models.User.username == username and models.User.password == password).first()
+    if user is None:
+        # create user
+        db_user = models.User(username=username, password=password)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    else:
+        # the user fito/fito already exists, we dont create ot
+        return None
+        
+
 
 # Author table CRUDs
 def get_authors(db: Session, skip: int = 0, limit: int = 100):
