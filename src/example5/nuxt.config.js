@@ -40,11 +40,12 @@ export default {
 
   axios: {
     // extra config e.g
-    baseURL: process.env.API_URL,
+    // baseURL: process.env.API_URL || 'http://127.0.0.1:8000'
+    baseURL: process.env.API_URL
   },
 
   proxy: {
-    '/api/': 'http://127.0.0.1:8001'  // we do this beacuse of CORS
+    '/api/': 'http://127.0.0.1:8000'  // we do this beacuse of CORS
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
