@@ -173,6 +173,7 @@
 
 <script>
     export default {
+        middleware: 'auth',
         layout: 'navigation',
         name: 'AuthorsPage',
         data: () => ({

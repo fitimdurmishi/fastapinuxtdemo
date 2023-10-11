@@ -151,6 +151,7 @@
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
     export default {
+        middleware: 'auth',
         components: { Treeselect },
         layout: 'navigation',
         name: 'BooksPage',

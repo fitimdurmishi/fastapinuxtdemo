@@ -12,12 +12,30 @@
                   <li>
                     <NuxtLink to="/books">Books</NuxtLink>
                   </li>
+                  <li v-if="isAuthenticated">
+                    {{ loggedInUser.username }}
+                  </li>
+                  <li v-else>
+                    <NuxtLink to="/login">Log In</NuxtLink>
+                    <NuxtLink to="/protected">Ptotected</NuxtLink>
+                  </li>
                 </ul>
             </nav>
         </div>
         <Nuxt />
     </div>
 </template>
+
+<script>
+  import { mapGetters } from 'vuex'
+
+  export default {
+    computed: {
+      ...mapGetters(['isAuthenticated', 'loggedInUser'])
+    }
+}
+
+</script>
 
 <style>
 /* home route and active route will show in bold as it matches / and /about */

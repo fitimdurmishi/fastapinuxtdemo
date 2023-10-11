@@ -45,3 +45,6 @@ curl -X PUT -H "Content-Type: application/json" -d '{"name": "Updated Item Name"
 	cd dashboard
 	npm run build
 	npm run start
+
+
+https://morioh.com/a/69b053efc138/implementing-authentication-in-a-nuxtjs-app

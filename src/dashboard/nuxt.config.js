@@ -36,12 +36,48 @@ export default {
   modules: [
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
+    '@nuxtjs/auth'
   ],
 
   axios: {
     // extra config e.g
     // baseURL: process.env.API_URL || 'http://127.0.0.1:8000'
     baseURL: process.env.API_URL
+  },
+
+  // auth: {
+  //   strategies: {
+  //     local: {
+  //       endpoints: {
+  //         login: { url: 'token', method: 'post', propertyName: 'data.access_token' },
+  //         user: { url: 'me', method: 'get', propertyName: 'data' },
+  //         logout: false,
+  //       },
+  //     }
+  //   }
+  // },
+
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'access_token',
+          global: true,
+          required: true,
+          type: 'Bearer',
+        },
+        user: {
+          property: 'user',
+          autoFetch: false,
+        },
+        endpoints: {
+          login: { url: '/token', method: 'post', propertyName: 'data.access_token' },
+          logout: { url: '/auth/logout', method: 'post' },
+          // user: { url: '/auth/user', method: 'get' },
+          user: false
+        },
+      },
+    },
   },
 
   proxy: {
