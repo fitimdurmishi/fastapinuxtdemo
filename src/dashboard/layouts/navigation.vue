@@ -1,29 +1,36 @@
 <template>
-    <div>
-        <div class="pt-5">
-            <nav>
-                <ul>
-                  <li>
-                    <NuxtLink to="/">Home</NuxtLink>
-                  </li>
-                  <li>
-                    <NuxtLink to="/authors">Authors</NuxtLink>
-                  </li>
-                  <li>
-                    <NuxtLink to="/books">Books</NuxtLink>
-                  </li>
-                  <li v-if="isAuthenticated">
-                    {{ loggedInUser.username }}
-                  </li>
-                  <li v-else>
-                    <NuxtLink to="/login">Log In</NuxtLink>
-                    <NuxtLink to="/protected">Ptotected</NuxtLink>
-                  </li>
-                </ul>
-            </nav>
-        </div>
-        <Nuxt />
-    </div>
+  <div>
+    <b-navbar toggleable="lg" type="dark" variant="info" >
+      <b-navbar-brand href="/">Home</b-navbar-brand>
+  
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+  
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav v-if="isAuthenticated">
+          <b-nav-item href="/authors">Authors</b-nav-item>
+          <b-nav-item href="/authors">Books</b-nav-item>
+        </b-navbar-nav>
+  
+        <!-- Right aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+
+
+          <!-- <b-button size="sm" @click="logout">Logout</b-button> -->
+
+          <li v-if="isAuthenticated">
+            <!-- {{ loggedInUser.username }} -->
+            <b-button size="sm" @click="logout">Logout</b-button>
+          </li>
+          <li v-else>
+            <b-button size="sm" @click="login">Login</b-button>
+          </li>
+
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+    
+    <Nuxt />
+  </div>
 </template>
 
 <script>
@@ -32,64 +39,15 @@
   export default {
     computed: {
       ...mapGetters(['isAuthenticated', 'loggedInUser'])
-    }
+    },
+    methods: {
+      logout() {
+        this.$auth.logout();
+        this.$router.push('/login');
+      },
+      login() {
+        this.$router.push("/login");
+      },
+    },
 }
-
 </script>
-
-<style>
-/* home route and active route will show in bold as it matches / and /about */
-a.nuxt-link-active {
-  font-weight: bold;
-}
-/* exact link will show the primary color for only the exact matching link */
-a.nuxt-link-exact-active {
-  color: #00c58e;
-}
-
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-    Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,
-    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  margin: 0;
-}
-
-main {
-  margin: 0 auto;
-  padding: 0 1rem;
-  margin-top: 100px;
-  max-width: 1280px;
-  text-align: center;
-}
-img {
-  margin-bottom: 1rem;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-li {
-  margin: 0 0.5rem;
-  padding: 0.25rem;
-  font-size: 1.2rem;
-}
-
-nav {
-  padding: 0 1rem;
-}
-
-a,
-a:visited {
-  text-decoration: none;
-  color: inherit;
-}
-
-a:hover {
-  color: #00c58e;
-}
-
-</style>

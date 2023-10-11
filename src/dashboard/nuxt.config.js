@@ -45,18 +45,6 @@ export default {
     baseURL: process.env.API_URL
   },
 
-  // auth: {
-  //   strategies: {
-  //     local: {
-  //       endpoints: {
-  //         login: { url: 'token', method: 'post', propertyName: 'data.access_token' },
-  //         user: { url: 'me', method: 'get', propertyName: 'data' },
-  //         logout: false,
-  //       },
-  //     }
-  //   }
-  // },
-
   auth: {
     strategies: {
       local: {
@@ -72,7 +60,7 @@ export default {
         },
         endpoints: {
           login: { url: '/token', method: 'post', propertyName: 'data.access_token' },
-          logout: { url: '/auth/logout', method: 'post' },
+          // logout: { url: '/auth/logout', method: 'post' },
           // user: { url: '/auth/user', method: 'get' },
           user: false
         },

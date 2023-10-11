@@ -21,6 +21,7 @@
   
   export default {
     middleware: 'auth',
+    layout: 'navigation',
     computed: {
       ...mapGetters(['loggedInUser'])
     }
