@@ -18,8 +18,8 @@
   export default {
     data() {
       return {
-        username: '',
-        password: '',
+        username: 'fito',
+        password: 'fito',
       };
     },
     methods: {
