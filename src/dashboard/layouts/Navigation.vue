@@ -7,10 +7,10 @@
   
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav v-if="isAuthenticated">
-          <NuxtLink to="/authors">Authors</NuxtLink>
+          <NuxtLink to="/authors" class="navbar-link">Authors</NuxtLink>
         </b-navbar-nav>
-        <b-navbar-nav v-if="isAuthenticated" class="pl-2">
-          <NuxtLink to="/books">Books</NuxtLink>
+        <b-navbar-nav v-if="isAuthenticated" class="pl-3">
+          <NuxtLink to="/books" class="navbar-link">Books</NuxtLink>
         </b-navbar-nav>
   
         <!-- Right aligned nav items -->
@@ -52,3 +52,9 @@
     },
 }
 </script>
+
+<style>
+.navbar-link {
+  color: white !important;
+}
+</style>
