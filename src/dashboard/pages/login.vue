@@ -1,11 +1,15 @@
 <template>
     <div id="outPopUp">
       <b-row >
-        <input v-model="username" placeholder="Username" />
+        <!-- <input v-model="username" placeholder="Username" /> -->
+        <b-form-input v-model="username" placeholder="Enter the username"></b-form-input>
       </b-row>
-      <b-row class="pt-2"><input v-model="password" placeholder="Password" type="password" /></b-row>
       <b-row class="pt-2">
-        <button @click="login">Login</button>
+        <!-- <input v-model="password" placeholder="Password" type="password" /> -->
+        <b-form-input v-model="password" type="password" placeholder="Enter the password"></b-form-input>
+      </b-row>
+      <b-row class="pt-2">
+        <b-button @click="login" class="text-center">Login</b-button>
       </b-row>      
     </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="dark" variant="info" >
+    <b-navbar toggleable="sm" type="dark" variant="info" sticky>
       <b-navbar-brand href="/">Home</b-navbar-brand>
   
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -8,7 +8,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav v-if="isAuthenticated">
           <b-nav-item href="/authors">Authors</b-nav-item>
-          <b-nav-item href="/authors">Books</b-nav-item>
+          <b-nav-item href="/books">Books</b-nav-item>
         </b-navbar-nav>
   
         <!-- Right aligned nav items -->
@@ -42,8 +42,8 @@
     },
     methods: {
       logout() {
-        this.$auth.logout();
-        this.$router.push('/login');
+        this.$auth.logout(); // logout using the 'auth' middleware
+        this.$router.push('/login'); // redirect to login page
       },
       login() {
         this.$router.push("/login");

@@ -11,9 +11,9 @@
   import { mapGetters } from 'vuex'
 
   export default {
-    layout: 'navigation',
+    layout: 'Navigation',
     computed: {
-      ...mapGetters(['isAuthenticated', 'loggedInUser'])
+      ...mapGetters(['isAuthenticated'])
     },
   }
 </script>

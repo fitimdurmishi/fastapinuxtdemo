@@ -153,7 +153,7 @@
     export default {
         middleware: 'auth',
         components: { Treeselect },
-        layout: 'navigation',
+        layout: 'Navigation',
         name: 'BooksPage',
         data: () => ({
             booksWithAuthorsDetails: [],

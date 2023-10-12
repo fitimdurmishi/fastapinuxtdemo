@@ -174,7 +174,7 @@
 <script>
     export default {
         middleware: 'auth',
-        layout: 'navigation',
+        layout: 'Navigation',
         name: 'AuthorsPage',
         data: () => ({
             perPage: 15,
