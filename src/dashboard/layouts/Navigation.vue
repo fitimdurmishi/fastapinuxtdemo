@@ -1,19 +1,20 @@
 <template>
   <div>
     <b-navbar toggleable="sm" type="dark" variant="info" sticky>
-      <b-navbar-brand href="/">Home</b-navbar-brand>
+      <!-- <b-navbar-brand href="/">Home</b-navbar-brand> -->
   
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
   
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav v-if="isAuthenticated">
-          <b-nav-item href="/authors">Authors</b-nav-item>
-          <b-nav-item href="/books">Books</b-nav-item>
+          <NuxtLink to="/authors">Authors</NuxtLink>
+        </b-navbar-nav>
+        <b-navbar-nav v-if="isAuthenticated" class="pl-2">
+          <NuxtLink to="/books">Books</NuxtLink>
         </b-navbar-nav>
   
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-
 
           <!-- <b-button size="sm" @click="logout">Logout</b-button> -->
 
