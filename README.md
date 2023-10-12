@@ -1,50 +1,56 @@
 # datacosechallenge
 
+Below are infos about the configuration needed to run the projects
+
+
+# DB related
+
+First of all, database environment is needed to configure.
+
+RDBMS system used for this project is Postgresql, so we need Postgresql server (i have used localhost, if you want to use different server, then you need appropriate connesction string, will show on connection string below on API configs).
+
+First on the DB server (i have it here on localhost), we create the database named 'datacose', withe the command:
+	createdb -h localhost -p 5432 -U postgres datacose
+
+Then we create/restore the schema of the DB, with seeded data for the tables. This is done by using the file db_datacose.sql and the following command:
+	psql -h localhost -p 5432 -U postgres -d datacose -f {ENTER-HERE-THE-PATH-TO-THIS-FILE}/db_datacose.sql
+
+
+
+
 # api
 
-starting api app
+API project is located on the folder: ~/src/api . FastAPI is used as technology for the development of the REST service.
 
-python -m uvicorn main:app --reload
-uvicorn main:app --reload
-uvicorn main:app --reload --port 8001
+Needed python libraries are needed to install.
 
--- when starting on Windows we need to add: 'python -m'
-python -m uvicorn main3:app --reload
+We need to set the appropriate connection string to the database. This is done by editing the value of DATABASE_URL key on the env file: ~/src/api/.env
+	DATABASE_URL = "postgresql://postgres:postgres@localhost/datacose"
 
-uvicorn api2.main:app --reload
-python -m uvicorn main:app --reload
+I have used here, localhost server, datacose is the name of the database, and username/password as postgres/postgres. You can set here the correct values for your environment.
 
-curl -X POST "http://127.0.0.1:8000/token" -H "accept: application/json" -H "Content-Type: application/x-www-form-urlencoded" -d "username=testuser&password=password"
-curl -X GET "http://127.0.0.1:8000/secure-data" -H "accept: application/json" -H "Authorization: Bearer <YOUR_TOKEN>"
+To start the api server, cd to the ~/src/api folder and execute the command:
 
+	# for MAC operating systems
+	uvicorn main:app --reload --port 8000
 
-pip install databases databases[postgresql]
-pip install alembic psycopg2 python-dotenv
+	# for Windows
+	python -m uvicorn main:app --reload --port 8000
 
-resources
-https://www.educative.io/answers/how-to-use-postgresql-database-in-fastapi
-https://fastapi.tiangolo.com/tutorial/sql-databases/#create-your-fastapi-path-operations
-https://www.smashingmagazine.com/2020/05/getting-started-axios-nuxt/
-
-
-curl -X PUT -H "Content-Type: application/json" -d '{"name": "Updated Item Name", "description": "Updated Item Description"}' http://127.0.0.1:8001/items/3
 
 
 
 # dashboard
 
-	create-nuxt-app {app-name}
+The front-end project is located on the folder: ~/src/dashboard . Nuxt 2 is used as technology here.
+
+Here also we have env file, located on the folder ~/src/dashboard/.env where we need to set the correct API_URL value for your environment:
+
+API_URL = http://127.0.0.1:8000
+
+To start the app, first we install the required modules with:
 
 	npm install
 
-  To get started:
-	cd dashboard
+then 
 	npm run dev
-
-  To build & start for production:
-	cd dashboard
-	npm run build
-	npm run start
-
-
-https://morioh.com/a/69b053efc138/implementing-authentication-in-a-nuxtjs-app
