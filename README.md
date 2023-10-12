@@ -56,3 +56,6 @@ To start the app, first we install the required modules with:
 then
 
 	npm run dev
+
+
+To login on the system you will use these ceredentials: fito/fito
