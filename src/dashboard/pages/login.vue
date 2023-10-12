@@ -32,6 +32,9 @@
           // Access the user data from the response
           // const userData = response.data.user;
           const userData = this.username;
+
+         
+          // this.$store.dispatch('auth/storeLoggedUser', this.username);
         
 
           // Handle user data as needed
